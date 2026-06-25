@@ -127,18 +127,26 @@ export default function DentistDashboard() {
           </div>
         </div>
 
+     {/* Navigation */}
         <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto">
           {[
-            { name: "Dashboard", icon: Home, active: true },
-            { name: "Appointments", icon: Calendar, active: false },
-            { name: "Patients", icon: Users, active: false },
-            { name: "Treatments", icon: ClipboardList, active: false },
-            { name: "X-rays & docs", icon: FileImage, active: false },
-            { name: "Billing", icon: DollarSign, active: false },
-            { name: "Messages", icon: MessageSquare, active: false },
+            // 1. Added the 'path' property to each item
+            { name: "Dashboard", icon: Home, active: true, path: "/dentistdashboard" },
+            { name: "Appointments", icon: Calendar, active: false, path: "/appointments" },
+            { name: "Patients", icon: Users, active: false, path: "#" },
+            { name: "Treatments", icon: ClipboardList, active: false, path: "#" },
+            { name: "X-rays & docs", icon: FileImage, active: false, path: "#" },
+            { name: "Billing", icon: DollarSign, active: false, path: "#" },
+            { name: "Messages", icon: MessageSquare, active: false, path: "#" },
           ].map((item) => (
             <button
               key={item.name}
+              // 2. Added the onClick handler here!
+              onClick={() => {
+                if (item.path !== "#") {
+                  router.push(item.path);
+                }
+              }}
               className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-xl font-medium transition-colors ${
                 item.active 
                   ? "bg-gray-100 text-black font-bold" 
