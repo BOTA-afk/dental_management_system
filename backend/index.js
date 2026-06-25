@@ -17,6 +17,14 @@ app.use(cors());
 app.use("/api/auth", authRoutes);
 app.use("/api/dashboard", dashboardRoutes); // <-- Add this
 
+
+
+
+
+
+
+
+
 // Test route
 app.get("/", (req, res) => {
   res.send("API is running...");
