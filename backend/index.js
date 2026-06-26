@@ -8,6 +8,9 @@ import authRoutes from "./routes/authRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js"; 
 import appointmentRoutes from "./routes/appointmentRoutes.js"; 
 import patientRoutes from "./routes/patientRoutes.js"; // <-- ADDED THIS
+import treatmentRoutes from "./routes/treatmentRoutes.js";
+import recordRoutes from "./routes/recordRoutes.js";
+import billingRoutes from "./routes/billingRoutes.js";
 
 dotenv.config();
 
@@ -22,6 +25,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/dashboard", dashboardRoutes); 
 app.use("/api/appointments", appointmentRoutes); 
 app.use("/api/patients", patientRoutes); // <-- ADDED THIS
+app.use("/api/treatments", treatmentRoutes);
+app.use("/api/records", recordRoutes);
+app.use("/api/billing", billingRoutes);
 
 // Test route
 app.get("/", (req, res) => {

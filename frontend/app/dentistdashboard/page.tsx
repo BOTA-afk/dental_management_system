@@ -136,7 +136,7 @@ export default function DentistDashboard() {
             { name: "Dashboard", icon: Home, active: true, path: "/dentistdashboard" },
             { name: "Appointments", icon: Calendar, active: false, path: "/appointments" },
             { name: "Patients", icon: Users, active: false, path: "/patients" },
-            { name: "Treatments", icon: ClipboardList, active: false, path: "#" },
+            { name: "Treatments", icon: ClipboardList, active: false, path: "/treatments" },
             { name: "X-rays & docs", icon: FileImage, active: false, path: "#" },
             { name: "Billing", icon: DollarSign, active: false, path: "#" },
             { name: "Messages", icon: MessageSquare, active: false, path: "#" },
