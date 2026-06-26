@@ -1,10 +1,14 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import cors from "cors"; // Essential for Next.js to talk to Express
+import cors from "cors"; 
 
+// 1. Import all Routes
 import authRoutes from "./routes/authRoutes.js"; 
-import dashboardRoutes from "./routes/dashboardRoutes.js"; // <-- Add this
+import dashboardRoutes from "./routes/dashboardRoutes.js"; 
+import appointmentRoutes from "./routes/appointmentRoutes.js"; 
+import patientRoutes from "./routes/patientRoutes.js"; // <-- ADDED THIS
+
 dotenv.config();
 
 const app = express();
@@ -13,17 +17,11 @@ const app = express();
 app.use(express.json());
 app.use(cors()); 
 
-// Use Routes
+// 2. Use Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/dashboard", dashboardRoutes); // <-- Add this
-
-
-
-
-
-
-
-
+app.use("/api/dashboard", dashboardRoutes); 
+app.use("/api/appointments", appointmentRoutes); 
+app.use("/api/patients", patientRoutes); // <-- ADDED THIS
 
 // Test route
 app.get("/", (req, res) => {

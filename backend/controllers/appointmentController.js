@@ -109,3 +109,14 @@ export const cancelAppointment = async (req, res) => {
     res.status(500).json({ message: "Failed to cancel appointment" });
   }
 };
+
+// 5. GET ALL PATIENTS (For select dropdown in modal)
+export const getPatientsList = async (req, res) => {
+  try {
+    const patients = await Patient.find({}).sort({ name: 1 });
+    res.status(200).json(patients);
+  } catch (error) {
+    console.error("Fetch Patients Error:", error);
+    res.status(500).json({ message: "Failed to fetch patients" });
+  }
+};

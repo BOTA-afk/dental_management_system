@@ -119,12 +119,14 @@ export default function DentistDashboard() {
       {/* --- Sidebar --- */}
       <aside className="w-[260px] bg-white border-r border-gray-200 flex flex-col fixed h-full z-10">
         <div className="h-20 flex items-center px-8 border-b border-gray-100">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full border border-blue-500 flex items-center justify-center text-blue-600 font-bold text-xs">
-              D+
-            </div>
-            <span className="text-xl font-bold text-gray-900">Dentplus</span>
-          </div>
+          <div className="flex items-center gap-2">
+  <img 
+    src="/logo.png" 
+    alt="Dentplus Logo" 
+    className="w-10 h-10 object-contain" 
+  />
+  <span className="text-xl font-bold text-gray-900">Dentplus</span>
+</div>
         </div>
 
      {/* Navigation */}
@@ -133,7 +135,7 @@ export default function DentistDashboard() {
             // 1. Added the 'path' property to each item
             { name: "Dashboard", icon: Home, active: true, path: "/dentistdashboard" },
             { name: "Appointments", icon: Calendar, active: false, path: "/appointments" },
-            { name: "Patients", icon: Users, active: false, path: "#" },
+            { name: "Patients", icon: Users, active: false, path: "/patients" },
             { name: "Treatments", icon: ClipboardList, active: false, path: "#" },
             { name: "X-rays & docs", icon: FileImage, active: false, path: "#" },
             { name: "Billing", icon: DollarSign, active: false, path: "#" },
