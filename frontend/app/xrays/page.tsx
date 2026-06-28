@@ -1,14 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
-  Home, Calendar, Users, ClipboardList, File, DollarSign, MessageSquare,
-  Search, Bell, FileText, Download, Eye, ChevronDown,
-  LogOut
+  Search, Bell, FileText, Download, Eye, ChevronDown
 } from "lucide-react";
+import Sidebar from "@/app/components/Sidebar";
 
 export default function MedicalRecordsPage() {
   const pathname = usePathname();
@@ -33,53 +31,12 @@ export default function MedicalRecordsPage() {
     fetchRecords();
   }, [router]);
 
-  const sidebarLinks = [
-    { name: "Dashboard", icon: Home, href: "/dentistdashboard" },
-    { name: "Appointments", icon: Calendar, href: "/appointments" },
-    { name: "Patients", icon: Users, href: "/patients" },
-    { name: "Treatments", icon: ClipboardList, href: "/treatments" },
-    { name: "X-rays & docs", icon: File, href: "/xrays" },
-    { name: "Billing", icon: DollarSign, href: "/billing" },
-    { name: "Messages", icon: MessageSquare, href: "/messages" },
-  ];
-
   return (
-    <div className="flex h-screen bg-[#f4f7f6] font-sans">
-      {/* Sidebar: Unified UI */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col justify-between">
-        <div>
-          <div className="h-20 flex items-center px-6 border-b border-gray-200">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">D</div>
-              <span className="text-xl font-bold text-gray-900">Dentplus</span>
-            </div>
-          </div>
-          <nav className="p-4 space-y-1">
-            {sidebarLinks.map((link) => {
-              const isActive = pathname === link.href;
-              return (
-                <Link key={link.name} href={link.href} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${isActive ? "bg-gray-100 font-semibold text-black" : "text-gray-600 hover:bg-gray-50"}`}>
-                  <link.icon size={20} className={isActive ? "text-black" : "text-gray-500"} />
-                  {link.name}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-        {/* Standardized Logout Section */}
-        <div className="p-4 border-t border-gray-100">
-  <button 
-    onClick={() => { localStorage.removeItem("token"); router.push("/login"); }} 
-    className="flex items-center gap-3 px-4 py-3 text-red-500 font-bold hover:bg-red-50 rounded-xl w-full transition-colors"
-  >
-    <LogOut size={20} />
-    Logout
-  </button>
-</div>
-      </aside>
+    <div className="min-h-screen flex w-full font-sans bg-[#f4f7f6]">
+      <Sidebar />
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 ml-[260px] flex flex-col h-screen overflow-hidden">
         <header className="h-20 flex items-center justify-between px-8 bg-white border-b border-gray-100">
           <h1 className="text-2xl font-bold text-gray-900">Medical Records</h1>
           <div className="flex items-center gap-4">

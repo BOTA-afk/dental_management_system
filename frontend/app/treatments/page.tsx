@@ -1,23 +1,22 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Home, Calendar, Users, ClipboardList, File, DollarSign, MessageSquare,
-  LogOut, Search, Bell, CheckCircle2, Clock, AlertCircle
+  Search, Bell, CheckCircle2, Clock, AlertCircle
 } from "lucide-react";
+import Sidebar from "@/app/components/Sidebar";
 
 // Animation Variants
 const containerVariants = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { staggerChildren: 0.1 } }
-};
+} as const;
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-};
+} as const;
 
 export default function TreatmentsPage() {
   const pathname = usePathname();
@@ -52,44 +51,12 @@ export default function TreatmentsPage() {
     fetchTreatments();
   }, [router]);
 
-  const sidebarLinks = [
-    { name: "Dashboard", icon: Home, href: "/dentistdashboard" },
-    { name: "Appointments", icon: Calendar, href: "/appointments" },
-    { name: "Patients", icon: Users, href: "/patients" },
-    { name: "Treatments", icon: ClipboardList, href: "/treatments" },
-    { name: "X-rays & docs", icon: File, href: "/xrays" },
-    { name: "Billing", icon: DollarSign, href: "/billing" },
-    { name: "Messages", icon: MessageSquare, href: "/messages" },
-  ];
-
   return (
-    <div className="flex h-screen bg-[#f4f7f6] font-sans">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col justify-between">
-        <div>
-          <div className="h-20 flex items-center px-6 border-b border-gray-200">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">D</div>
-              <span className="text-xl font-bold text-gray-900">Dentplus</span>
-            </div>
-          </div>
-          <nav className="p-4 space-y-1">
-            {sidebarLinks.map((link) => {
-              const isActive = pathname === link.href;
-              return (
-                <Link key={link.name} href={link.href} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${isActive ? "text-black font-semibold bg-gray-50" : "text-gray-600 hover:bg-gray-50 hover:text-black"}`}>
-                  <link.icon size={20} className={isActive ? "text-black" : "text-gray-500"} />
-                  {link.name}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-        <div className="p-4 border-t"><button onClick={() => { localStorage.removeItem("token"); router.push("/login"); }} className="flex items-center gap-3 px-4 py-3 text-red-500 font-bold hover:bg-red-50 rounded-xl w-full"><LogOut size={20} /> Logout</button></div>
-      </aside>
+    <div className="min-h-screen flex w-full font-sans bg-[#f4f7f6]">
+      <Sidebar />
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 ml-[260px] flex flex-col h-screen overflow-hidden">
         <header className="h-20 flex items-center justify-between px-8 bg-[#f4f7f6]">
           <div><h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Treatments</h1></div>
           <div className="flex items-center gap-6">

@@ -1,22 +1,17 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  Home, Calendar, Users, FileText, File, DollarSign, MessageSquare,
-  LogOut, Search, Bell, Plus, X, Check
+  Search, Bell, Plus, X, Check
 } from "lucide-react";
+import Sidebar from "@/app/components/Sidebar";
 
 export default function PatientsPage() {
   const pathname = usePathname();
-  const router = useRouter(); // You probably already have this line
+  const router = useRouter();
+
   
-  // --- ADD THIS LOGOUT FUNCTION ---
-  const handleLogout = () => {
-    localStorage.removeItem("token"); // Destroy the security key
-    router.push("/login");            // Kick them out to the login screen
-  };
   
   // --- STATE ---
   const [searchTerm, setSearchTerm] = useState("");
@@ -103,62 +98,12 @@ export default function PatientsPage() {
     }
   };
 
-  const sidebarLinks = [
-    { name: "Dashboard", icon: Home, href: "/dentistdashboard" },
-    { name: "Appointments", icon: Calendar, href: "/appointments" },
-    { name: "Patients", icon: Users, href: "/patients" },
-    { name: "Treatments", icon: FileText, href: "/treatments" },
-    { name: "X-rays & docs", icon: File, href: "/xrays" },
-    { name: "Billing", icon: DollarSign, href: "/billing" },
-    { name: "Messages", icon: MessageSquare, href: "/messages" },
-  ];
-
   return (
-    <div className="flex h-screen bg-[#f4f7f6] font-sans relative">
-      {/* SIDEBAR */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col justify-between z-10">
-        <div>
-          <div className="h-20 flex items-center px-6 border-b border-gray-200">
-            <div className="flex items-center gap-2">
-  <img 
-    src="/logo.png" 
-    alt="Dentplus Logo" 
-    className="w-10 h-10 object-contain" 
-  />
-  <span className="text-xl font-bold text-gray-900">Dentplus</span>
-</div>
-          </div>
-          <nav className="p-4 space-y-1">
-            {sidebarLinks.map((link) => {
-              const isActive = pathname === link.href;
-              return (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
-                    isActive ? "text-black font-semibold bg-gray-50" : "text-gray-600 hover:bg-gray-50 hover:text-black font-medium"
-                  }`}
-                >
-                  <link.icon size={20} className={isActive ? "text-black" : "text-gray-500"} />
-                  {link.name}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-        <div className="p-4 border-t border-gray-100">
-          <button 
-  onClick={handleLogout} 
-  className="flex items-center gap-3 px-4 py-3 text-red-500 font-bold hover:bg-red-50 rounded-xl w-full transition-colors"
->
-  <LogOut size={20} />
-  Logout
-</button>
-        </div>
-      </aside>
+    <div className="min-h-screen flex w-full font-sans bg-[#f4f7f6]">
+      <Sidebar />
 
       {/* MAIN CONTENT */}
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 ml-[260px] flex flex-col h-screen overflow-hidden">
         <header className="h-20 flex items-center justify-between px-8 bg-[#f4f7f6]">
           <div>
             <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Patients</h1>

@@ -1,57 +1,118 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  Home, Calendar, Users, ClipboardList, File, DollarSign, MessageSquare,
-  LogOut, Search, Bell, Send
+  Search, Bell, Send
 } from "lucide-react";
+import { motion } from "framer-motion";
+import Sidebar from "@/app/components/Sidebar";
 
-const messagesList = [
-  { id: 1, name: "Lakshani Wasana (Patient)", snippet: "Thank you doctor, see you next week...", time: "2h ago", initials: "LW" },
-  { id: 2, name: "Assistant", snippet: "Room 101 is prepared", time: "3h ago", initials: "AS" },
-  { id: 3, name: "Ayodh Shakhya (Patient)", snippet: "Is the prescription ready, doctor?", time: "3h ago", initials: "AS" },
-  { id: 4, name: "Yugan Perera (Patient)", snippet: "Thank you doctor.", time: "2d ago", initials: "YP" },
-];
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+} as const;
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+} as const;
 
 export default function MessagesPage() {
   const pathname = usePathname();
   const router = useRouter();
+  
+  const [messages, setMessages] = useState<any[]>([]);
+  const [chats, setChats] = useState<any[]>([]);
+  const [activeChatId, setActiveChatId] = useState<string | null>(null);
+  const [newMessage, setNewMessage] = useState("");
 
-  const sidebarLinks = [
-    { name: "Dashboard", icon: Home, href: "/dentistdashboard" },
-    { name: "Appointments", icon: Calendar, href: "/appointments" },
-    { name: "Patients", icon: Users, href: "/patients" },
-    { name: "Treatments", icon: ClipboardList, href: "/treatments" },
-    { name: "X-rays & docs", icon: File, href: "/xrays" },
-    { name: "Billing", icon: DollarSign, href: "/billing" },
-    { name: "Messages", icon: MessageSquare, href: "/messages" },
-  ];
+  // Fetch chats list
+ // In app/messages/page.tsx, ensure your useEffect looks like this:
+useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (!token) { router.push("/login"); return; }
+  
+  fetch("http://localhost:5000/api/messages/chats", {
+    headers: { 
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json" 
+    }
+  })
+    .then(res => res.json())
+    .then(data => {
+      console.log("Chats received from server:", data);
+      if (Array.isArray(data)) {
+        setChats(data);
+      }
+    })
+    .catch(err => console.error("Error fetching chats:", err));
+}, []);
 
+  // Fetch messages for active chat
+  useEffect(() => {
+    if (!activeChatId) return;
+    const token = localStorage.getItem("token");
+    
+    fetch(`http://localhost:5000/api/messages/${activeChatId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(res => res.json())
+      .then(data => setMessages(data))
+      .catch(err => console.error("Error fetching messages:", err));
+  }, [activeChatId]);
+
+  // Handle Sending Message
+  const handleSendMessage = async () => {
+  console.log("Button clicked!");
+  console.log("Current activeChatId:", activeChatId);
+  console.log("Message text:", newMessage);
+
+  if (!activeChatId) {
+    alert("Stop! No chat is selected. Please click a patient on the left first.");
+    return;
+  }
+  
+  if (!newMessage.trim()) {
+    alert("Stop! The message box is empty.");
+    return;
+  }
+
+  // If you see the alerts above, the code below is what executes the request
+  const messageData = {
+    chatId: activeChatId,
+    text: newMessage,
+    isDoctor: true,
+    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  };
+
+  try {
+    const response = await fetch("http://localhost:5000/api/messages", {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}` 
+      },
+      body: JSON.stringify(messageData),
+    });
+
+    if (response.ok) {
+      const savedMsg = await response.json();
+      setMessages((prev) => [...prev, savedMsg]);
+      setNewMessage("");
+    } else {
+      alert("Server error. Check backend logs.");
+    }
+  } catch (err: any) {
+    alert("Fetch error: " + err.message);
+  }
+};
   return (
-    <div className="flex h-screen bg-[#f4f7f6] font-sans">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col justify-between">
-        <div>
-          <div className="h-20 flex items-center px-6 border-b border-gray-200">
-            <div className="flex items-center gap-2 font-bold text-xl">
-              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">D</div> Dentplus
-            </div>
-          </div>
-          <nav className="p-4 space-y-1">
-            {sidebarLinks.map((link) => (
-              <Link key={link.name} href={link.href} className={`flex items-center gap-3 px-4 py-3 rounded-xl ${pathname === link.href ? "bg-gray-100 font-bold" : "text-gray-600"}`}>
-                <link.icon size={20} /> {link.name}
-              </Link>
-            ))}
-          </nav>
-        </div>
-        <div className="p-6 border-t"><button onClick={() => { localStorage.removeItem("token"); router.push("/login"); }} className="flex items-center gap-3 text-red-500 font-bold"><LogOut size={20} /> Logout</button></div>
-      </aside>
+    <div className="min-h-screen flex w-full font-sans bg-[#f4f7f6]">
+      <Sidebar />
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 ml-[260px] flex flex-col h-screen overflow-hidden">
         <header className="h-20 flex items-center justify-between px-8 bg-white border-b border-gray-200">
           <div>
             <h1 className="text-3xl font-extrabold text-gray-900">Messages</h1>
@@ -64,41 +125,56 @@ export default function MessagesPage() {
           </div>
         </header>
 
-        <div className="flex flex-1 overflow-hidden">
-          {/* Message Sidebar */}
-          <div className="w-80 border-r bg-white p-4">
+        <motion.div 
+          variants={containerVariants} 
+          initial="hidden" 
+          animate="show"
+          className="flex flex-1 overflow-hidden"
+        >
+          <motion.div variants={itemVariants} className="w-80 border-r bg-white p-4">
             <div className="relative mb-4"><Search className="absolute left-3 top-3.5 text-gray-400" size={16} /><input className="w-full pl-10 pr-4 py-3 bg-gray-50 border rounded-xl outline-none" placeholder="Search..." /></div>
             <div className="space-y-2">
-              {messagesList.map((m) => (
-                <div key={m.id} className="p-3 hover:bg-gray-50 rounded-xl cursor-pointer flex gap-3">
-                  <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">{m.initials}</div>
+              {chats.map((chat: any) => (
+                <div key={chat._id} onClick={() => setActiveChatId(chat._id)} className={`p-3 rounded-xl cursor-pointer flex gap-3 ${activeChatId === chat._id ? 'bg-blue-50' : 'hover:bg-gray-50'}`}>
+                  <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">{chat.name.substring(0,2).toUpperCase()}</div>
                   <div className="flex-1 overflow-hidden">
-                    <div className="flex justify-between text-sm font-bold">{m.name} <span className="text-gray-400 font-normal">{m.time}</span></div>
-                    <p className="text-xs text-gray-500 truncate">{m.snippet}</p>
+                    <div className="flex justify-between text-sm font-bold">{chat.name} <span className="text-gray-400 font-normal">{chat.lastTime}</span></div>
+                    <p className="text-xs text-gray-500 truncate">{chat.lastMessage}</p>
                   </div>
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
 
-          {/* Chat Window */}
-          <div className="flex-1 flex flex-col bg-white">
-            <div className="p-4 border-b flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">LW</div>
-              <h2 className="font-bold text-lg">Lakshani Wasana <span className="block text-sm font-normal text-gray-500">Patient</span></h2>
-            </div>
+          <motion.div variants={itemVariants} className="flex-1 flex flex-col bg-white">
             <div className="flex-1 p-6 space-y-4 overflow-y-auto">
-              <div className="bg-gray-100 p-4 rounded-2xl rounded-bl-none max-w-sm">Hi Dr. Erandi, I wanted to check about my next appointment.<span className="block text-[10px] text-gray-400 mt-1">2.30 PM</span></div>
-              <div className="bg-blue-600 text-white p-4 rounded-2xl rounded-br-none max-w-sm ml-auto">Hello Lakshani! Your next checkup is scheduled for next Monday at 10 AM.<span className="block text-[10px] text-blue-200 mt-1">2.32 PM</span></div>
-              <div className="bg-gray-100 p-4 rounded-2xl rounded-bl-none max-w-sm">Perfect! Do I need to prepare anything?<span className="block text-[10px] text-gray-400 mt-1">2.33 PM</span></div>
-              <div className="bg-blue-600 text-white p-4 rounded-2xl rounded-br-none max-w-sm ml-auto">No special preparation needed. Just make sure to brush well before coming in.<span className="block text-[10px] text-blue-200 mt-1">2.35 PM</span></div>
+              {messages.map((m: any) => (
+                <div key={m._id} className={`p-4 rounded-2xl max-w-sm ${m.isDoctor ? 'bg-blue-600 text-white ml-auto rounded-br-none' : 'bg-gray-100 rounded-bl-none'}`}>
+                  {m.text}
+                  <span className={`block text-[10px] mt-1 ${m.isDoctor ? 'text-blue-200' : 'text-gray-400'}`}>{m.time}</span>
+                </div>
+              ))}
             </div>
             <div className="p-4 border-t flex gap-2">
-              <input className="flex-1 p-3 border rounded-xl outline-none" placeholder="Type your message..." />
-              <button className="bg-blue-600 text-white p-3 rounded-xl"><Send size={20} /></button>
+              <input 
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                className="flex-1 p-3 border rounded-xl outline-none" 
+                placeholder="Type your message..." 
+              />
+              <button 
+                onClick={() => {
+                  console.log("Button Clicked!");
+                  handleSendMessage();
+                }} 
+                className="bg-blue-600 text-white p-3 rounded-xl cursor-pointer"
+              >
+                <Send size={20} />
+              </button>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </main>
     </div>
   );

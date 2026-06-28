@@ -4,11 +4,11 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Home, Calendar as CalendarIcon, Users, ClipboardList, FileImage, 
-  DollarSign, MessageSquare, LogOut, Search, Bell, Plus,
+  Calendar as CalendarIcon, Search, Bell, Plus,
   CalendarDays, Clock, Phone, Mail, CheckCircle2, Clock4, AlertCircle, XCircle,
   User, LayoutGrid, ChevronDown
 } from "lucide-react";
+import Sidebar from "@/app/components/Sidebar";
 
 // --- Types ---
 type AppointmentStatus = 'Confirmed' | 'In Progress' | 'Pending' | 'Cancelled';
@@ -30,11 +30,11 @@ interface Appointment {
 const containerVariants = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { staggerChildren: 0.1 } }
-};
+} as const;
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-};
+} as const;
 
 export default function DentistAppointments() {
   const router = useRouter();
@@ -275,47 +275,7 @@ export default function DentistAppointments() {
   return (
     <div className="min-h-screen flex w-full font-sans bg-[#e8ebed]">
       
-      {/* --- Sidebar --- */}
-      <aside className="w-[260px] bg-white border-r border-gray-200 flex flex-col fixed h-full z-10">
-        <div className="h-20 flex items-center px-8 border-b border-gray-100">
-          <div className="flex items-center gap-2">
-  <img 
-    src="/logo.png" 
-    alt="Dentplus Logo" 
-    className="w-10 h-10 object-contain" 
-  />
-  <span className="text-xl font-bold text-gray-900">Dentplus</span>
-</div>
-        </div>
-
-        <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto">
-          {[
-            { name: "Dashboard", icon: Home, active: false, path: "/dentistdashboard" },
-            { name: "Appointments", icon: CalendarIcon, active: true, path: "/appointments" },
-            { name: "Patients", icon: Users, active: false, path: "/patients" },
-            { name: "Treatments", icon: ClipboardList, active: false, path: "/treatments" },
-            { name: "X-rays & docs", icon: FileImage, active: false, path: "#" },
-            { name: "Billing", icon: DollarSign, active: false, path: "#" },
-            { name: "Messages", icon: MessageSquare, active: false, path: "#" },
-          ].map((item) => (
-            <button
-              key={item.name}
-              onClick={() => { if (item.path !== "#") router.push(item.path); }}
-              className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-xl font-medium transition-colors ${item.active ? "bg-gray-100 text-black font-bold" : "text-gray-600 hover:bg-gray-50 hover:text-black"}`}
-            >
-              <item.icon className={`w-5 h-5 ${item.active ? "text-black" : "text-gray-500"}`} />
-              <span className="text-[15px]">{item.name}</span>
-            </button>
-          ))}
-        </nav>
-
-        <div className="p-4 mb-4">
-          <button onClick={handleLogout} className="w-full flex items-center gap-4 px-4 py-3 text-red-500 hover:bg-red-50 rounded-xl font-bold transition-colors">
-            <LogOut className="w-5 h-5" />
-            <span className="text-[15px]">Logout</span>
-          </button>
-        </div>
-      </aside>
+      <Sidebar />
 
       {/* --- Main Content --- */}
       <main className="flex-1 ml-[260px] flex flex-col h-screen overflow-hidden">
